@@ -1,7 +1,6 @@
 from bson import ObjectId
-from User import User
 from pydantic import BaseModel, Field, EmailStr
-from PyObjectId import PyObjectId
+from .util import *
 
 
 class UserInDB(BaseModel):
