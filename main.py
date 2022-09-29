@@ -16,24 +16,21 @@ from schemas import *
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="security/oauth/token")
 
 # db config
 client = motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
 db = client.yandex
 
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="security/oauth/token")
-
 app = FastAPI()
 
 
-async def verify_password(plain_password, hashed_password):
+async def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-async def get_password_hash(password):
+async def get_password_hash(password: str):
     return pwd_context.hash(password)
 
 
@@ -186,6 +183,6 @@ async def delete_order(id: str, current_user: User = Depends(get_current_active_
     if delete_result.deleted_count == 1:
         print(f"Successfully deleted order {id}.")
         return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=f"Successfully deleted order {id}.")
+                            content=f"Successfully deleted order {id}.")
 
     raise HTTPException(status_code=404, detail=f"Order {id} not found")
